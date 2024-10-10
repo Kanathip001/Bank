@@ -1,13 +1,18 @@
+import 'dart:ffi';
+
 class Transactions {
   int? keyID;
-  final String title;
-  final double amount;
-  final DateTime date;
+  final String bankname;
+  final String place;
+  final String founder;
+  final double asset;
 
   Transactions({
     this.keyID,
-    required this.title,
-    required this.amount,
-    required this.date,
+    required this.bankname,
+    required this.place,
+    required this.founder,
+    required this.asset,
+    
   });
 }

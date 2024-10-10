@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -25,9 +26,10 @@ class TransactionDB{
     var store = intMapStoreFactory.store('expense');
 
     var keyID  = store.add(db, {
-      "title": statement.title,
-      "amount": statement.amount,
-      "date": statement.date.toIso8601String()
+      "name": statement.bankname,
+      "place": statement.place,
+      "founder": statement.founder,
+      "asset": statement.asset,
     });
     db.close();
     return keyID;
@@ -41,9 +43,10 @@ class TransactionDB{
     for (var record in snapshot) {
       transactions.add(Transactions(
         keyID: record.key,
-        title: record['title'].toString(),
-        amount: double.parse(record['amount'].toString()),
-        date: DateTime.parse(record['date'].toString())
+        bankname: record['name'].toString(),
+        place: record['place'].toString(),
+        founder: record['founder'].toString(),
+        asset: double.parse(record['asset'].toString()),
       ));
     }
     db.close();
@@ -62,11 +65,12 @@ class TransactionDB{
     var store = intMapStoreFactory.store('expense');
     var filter = Finder(filter: Filter.equals(Field.key, statement.keyID));
     var result = store.update(db, finder: filter,  {
-      "title": statement.title,
-      "amount": statement.amount,
-      "date": statement.date.toIso8601String()
+      "name": statement.bankname,
+      "place": statement.place,
+      'founder': statement.founder,
+      'asset': statement.asset,
     });
-    db.close();
+    await db.close();
     print('update result: $result');
   }
 }

@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 255, 74, 61),
         title: const Text(
-          "ShoCar",
+          "BANK",
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 25, color: Colors.white),
         ),

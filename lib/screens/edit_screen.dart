@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class EditScreen extends StatefulWidget {
-
   Transactions statement;
 
   EditScreen({super.key, required this.statement});
@@ -18,78 +17,119 @@ class EditScreen extends StatefulWidget {
 class _EditScreenState extends State<EditScreen> {
   final formKey = GlobalKey<FormState>();
 
-  final titleController = TextEditingController();
-
-  final amountController = TextEditingController();
+  final nameCtl = TextEditingController();
+  final assetCtl = TextEditingController();
+  final founderCtl = TextEditingController();
+  final placeCtl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    titleController.text = widget.statement.title;
-    amountController.text = widget.statement.amount.toString();
+    nameCtl.text = widget.statement.bankname;
+    placeCtl.text = widget.statement.place;
+    founderCtl.text = widget.statement.founder;
+    assetCtl.text = widget.statement.asset.toString();
+
     return Scaffold(
         appBar: AppBar(
           title: const Text('แบบฟอร์มแก้ไขข้อมูล'),
         ),
-        body: Form(
-            key: formKey,
-            child: Column(
-              children: [
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'ชื่อรายการ',
-                  ),
-                  autofocus: false,
-                  controller: titleController,
-                  validator: (String? str) {
-                    if (str!.isEmpty) {
-                      return 'กรุณากรอกข้อมูล';
-                    }
-                  },
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'จำนวนเงิน',
-                  ),
-                  keyboardType: TextInputType.number,
-                  controller: amountController,
-                  validator: (String? input) {
-                    try {
-                      double amount = double.parse(input!);
-                      if (amount < 0) {
-                        return 'กรุณากรอกข้อมูลมากกว่า 0';
-                      }
-                    } catch (e) {
-                      return 'กรุณากรอกข้อมูลเป็นตัวเลข';
-                    }
-                  },
-                ),
-                TextButton(
-                    child: const Text('แก้ไขข้อมูล'),
-                    onPressed: () {
-                          if (formKey.currentState!.validate())
-                            {
-                              // create transaction data object
-                              var statement = Transactions(
-                                  keyID: widget.statement.keyID,
-                                  title: titleController.text,
-                                  amount: double.parse(amountController.text),
-                                  date: DateTime.now()
-                                  );
-                            
-                              // add transaction data object to provider
-                              var provider = Provider.of<TransactionProvider>(context, listen: false);
-                              
-                              provider.updateTransaction(statement);
+        body: SingleChildScrollView(
+          child: Form(
+              key: formKey,
+              child: Column(
+                children: [
+                    Container(
+                      margin: const EdgeInsets.all(30),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                            labelText: 'ชื่อธนาคาร',
+                            labelStyle: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
+                        autofocus: false,
+                        controller: nameCtl,
+                        validator: (String? str) {
+                          if (str!.isEmpty) {
+                            return 'กรุณากรอกข้อมูล';
+                          }
+                        },
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(30),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                            labelText: 'ที่ตั้ง',
+                            labelStyle: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
+                        autofocus: false,
+                        controller: nameCtl,
+                        validator: (String? str) {
+                          if (str!.isEmpty) {
+                            return 'กรุณากรอกข้อมูล';
+                          }
+                        },
+                      ),
+                    ),
+            
+                    Container(
+                      margin: const EdgeInsets.all(30),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                            labelText: 'ผู้ก่อตั้ง',
+                            labelStyle: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
+                        controller: founderCtl,
+                        validator: (String? str) {
+                          if (str!.isEmpty) {
+                            return 'กรุณากรอกข้อมูล';
+                          }
+                        },
+                      ),
+                    ),
+            
+                    Container(
+                      margin: const EdgeInsets.all(30),
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                            labelText: 'สินทรัพย์',
+                            labelStyle: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
+                        controller: assetCtl,
+                        validator: (String? str) {
+                          if (str!.isEmpty) {
+                            return 'กรุณากรอกข้อมูล';
+                          }
+                        },
+                      ),
+                    ),
+                    
+                  TextButton(
+                      child: const Text('แก้ไขข้อมูล'),
+                      onPressed: () {
+                        if (formKey.currentState!.validate()) {
+                          // create transaction data object
+                          var statement = Transactions(
+                                keyID: widget.statement.keyID,
+                                bankname: nameCtl.text,
+                                place: placeCtl.text,
+                                founder: founderCtl.text,
+                                asset:double.parse(assetCtl.text),
+                                );
 
-                              Navigator.push(context, MaterialPageRoute(
-                                fullscreenDialog: true,
-                                builder: (context){
-                                  return MyHomePage();
-                                }
-                              ));
-                            }
-                        })
-              ],
-            )));
+                          // add transaction data object to provider
+                          var provider = Provider.of<TransactionProvider>(context, listen: false);
+                          provider.updateTransaction(statement);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  fullscreenDialog: true,
+                                  builder: (context) {
+                                    return MyHomePage();
+                                  }));
+                        }
+                      })
+                ],
+              )),
+        ));
   }
 }

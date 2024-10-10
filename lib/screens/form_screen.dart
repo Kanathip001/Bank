@@ -1,7 +1,6 @@
 import 'package:account/main.dart';
 import 'package:account/models/transactions.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:account/provider/transaction_provider.dart';
 
@@ -14,8 +13,7 @@ class FormScreen extends StatefulWidget {
 
 class _FormScreenState extends State<FormScreen> {
   final formKey = GlobalKey<FormState>();
-
-  final nameCtl = TextEditingController();
+  final banknameCtl = TextEditingController();
   final placeCtl = TextEditingController();
   final founderCtl = TextEditingController();
   final assetCtl = TextEditingController();
@@ -23,115 +21,106 @@ class _FormScreenState extends State<FormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: const Text(
-            'แบบฟอร์มเพิ่มข้อมูล',
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 25,
-                color: Color.fromARGB(255, 85, 75, 114)),
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text(
+          'แบบฟอร์มเพิ่มข้อมูล',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 25,
+            color: Colors.white,
           ),
         ),
-        body: SingleChildScrollView(
+        backgroundColor: const Color.fromARGB(255, 255, 74, 61),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Form(
-              key: formKey,
-              child: Column(
-                children: [
-                  Container(
-                    margin: const EdgeInsets.all(30),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                          labelText: 'ชื่อธนาคาร',
-                          labelStyle: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold)),
-                      autofocus: false,
-                      controller: nameCtl,
-                      validator: (String? str) {
-                        if (str!.isEmpty) {
-                          return 'กรุณากรอกข้อมูล';
-                        }
-                      },
-                    ),
+            key: formKey,
+            child: Column(
+              children: [
+                _buildTextField(
+                  label: 'ชื่อธนาคาร',
+                  controller: banknameCtl,
+                ),
+                _buildTextField(
+                  label: 'สินทรัพย์',
+                  controller: assetCtl,
+                  keyboardType: TextInputType.number,
+                  validator: (String? input) {
+                    try {
+                      double amount = double.parse(input!);
+                      if (amount < 0) {
+                        return 'กรุณากรอกข้อมูลมากกว่า 0';
+                      }
+                    } catch (e) {
+                      return 'กรุณากรอกข้อมูลเป็นตัวเลข';
+                    }
+                  },
+                ),
+                _buildTextField(
+                  label: 'ผู้ก่อตั้ง',
+                  controller: founderCtl,
+                ),
+                _buildTextField(
+                  label: 'ที่ตั้ง',
+                  controller: placeCtl,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 255, 74, 61),
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                   ),
-                  Container(
-                    margin: const EdgeInsets.all(30),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                          labelText: 'สินทรัพย์',
-                          labelStyle: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold)),
-                      keyboardType: TextInputType.number,
-                      controller: assetCtl,
-                      validator: (String? input) {
-                        try {
-                          double amount = double.parse(input!);
-                          if (amount < 0) {
-                            return 'กรุณากรอกข้อมูลมากกว่า 0';
-                          }
-                        } catch (e) {
-                          return 'กรุณากรอกข้อมูลเป็นตัวเลข';
-                        }
-                      },
-                    ),
+                  child: const Text(
+                    'บันทึก',
+                    style: TextStyle(fontSize: 20, color: Colors.white),
                   ),
-          
-                  Container(
-                    margin: const EdgeInsets.all(30),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                          labelText: 'ผู้ก่อตั้ง',
-                          labelStyle: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold)),
-                      controller: founderCtl,
-                    ),
-                  ),
-          
-                  Container(
-                    margin: const EdgeInsets.all(30),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                          labelText: 'ที่ตั้ง',
-                          labelStyle: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold)),
-                      controller: placeCtl,
-                    ),
-                  ),
-          
-                  TextButton(
-                      child: const Text(
-                        'บันทึก',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25,
-                            color: Color.fromARGB(255, 85, 75, 114)),
-                      ),
-                      onPressed: () {
-                        if (formKey.currentState!.validate()) {
-                          // create transaction data object
-                          var statement = Transactions(
-                              keyID: null,
-                              bankname: nameCtl.text,
-                              asset: double.parse(assetCtl.text),
-                              founder: founderCtl.text,
-                              place:placeCtl.text,
-                              );
-          
-                          // add transaction data object to provider
-                          var provider = Provider.of<TransactionProvider>(context, listen: false);
-                          provider.addTransaction(statement);
-          
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  fullscreenDialog: true,
-                                  builder: (context) {
-                                    return MyHomePage();
-                                  }));
-                        }
-                      })
-                ],
-              )),
-        ));
+                  onPressed: () {
+                    if (formKey.currentState!.validate()) {
+                      var statement = Transactions(
+                        keyID: null,
+                        bankname: banknameCtl.text,
+                        asset: double.parse(assetCtl.text),
+                        founder: founderCtl.text,
+                        place: placeCtl.text,
+                      );
+
+                      var provider = Provider.of<TransactionProvider>(context, listen: false);
+                      provider.addTransaction(statement);
+
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MyHomePage(),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({required String label, required TextEditingController controller, TextInputType? keyboardType, String? Function(String?)? validator}) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: TextFormField(
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          border: OutlineInputBorder(),
+          contentPadding: const EdgeInsets.all(10),
+        ),
+        controller: controller,
+        keyboardType: keyboardType,
+        validator: validator,
+      ),
+    );
   }
 }

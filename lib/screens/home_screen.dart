@@ -2,7 +2,6 @@ import 'package:account/provider/transaction_provider.dart';
 import 'package:account/screens/edit_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,9 +21,12 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 255, 74, 61),
         title: const Text(
-          "BANK",
+          "Bank",
           style: TextStyle(
-              fontWeight: FontWeight.bold, fontSize: 25, color: Colors.white),
+            fontWeight: FontWeight.bold,
+            fontSize: 25,
+            color: Colors.white,
+          ),
         ),
         actions: [
           IconButton(
@@ -35,21 +37,43 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(56.0),
+          preferredSize: const Size.fromHeight(70.0),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextField(
-              decoration: const InputDecoration(
-                hintText: 'ค้นหารายการ...',
-                border: InputBorder.none,
-                hintStyle: TextStyle(color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 3,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3), // changes position of shadow
+                  ),
+                ],
               ),
-              onChanged: (value) {
-                setState(() {
-                  searchQuery = value;
-                });
-              },
-              style: const TextStyle(color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'ค้นหารายการ...',
+                  hintStyle: TextStyle(
+                    color: Colors.grey[500],
+                    fontWeight: FontWeight.bold,
+                  ),
+                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.all(15),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    searchQuery = value;
+                  });
+                },
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
         ),
@@ -59,6 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
           final filteredTransactions = provider.transactions.where((transaction) {
             return transaction.bankname.toLowerCase().contains(searchQuery.toLowerCase());
           }).toList();
+
           if (filteredTransactions.isEmpty) {
             return const Center(
               child: Text(
@@ -68,58 +93,77 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           } else {
             return ListView.builder(
+              padding: const EdgeInsets.all(10.0),
               itemCount: filteredTransactions.length,
               itemBuilder: (context, index) {
                 var statement = filteredTransactions[index];
-                return Card(
-                  elevation: 5,
-                  margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.all(16.0),
-                    title: Text(
-                      statement.bankname,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
+                return Dismissible(
+                  key: Key(statement.keyID.toString()),
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (direction) {
+                    provider.deleteTransaction(statement.keyID);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('ลบ ${statement.bankname} เรียบร้อยแล้ว')),
+                    );
+                  },
+                  background: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 20),
+                    color: Colors.red,
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  child: Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
                     ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('ที่ตั้ง: ${statement.place}', style: TextStyle(fontSize: 16)),
-                        Text('ผู้ก่อตั้ง: ${statement.founder}', style: TextStyle(fontSize: 16)),
-                        Text('สินทรัพย์: ${statement.asset.toInt()} ล้านบาท', style: TextStyle(fontSize: 16)),
-                      ],
-                    ),
-                    leading: CircleAvatar(
-                      backgroundColor: const Color.fromARGB(255, 255, 73, 73),
-                      child: FittedBox(
-                        child: Text(
-                          statement.bankname,
-                          style: TextStyle(color: Colors.white),
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      title: Text(
+                        statement.bankname,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.black87,
                         ),
                       ),
-                    ),
-                    trailing: IconButton(
-                      icon: const Icon(
-                        Icons.delete,
-                        color: Colors.red,
-                        size: 45,
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('ที่ตั้ง: ${statement.place}', style: TextStyle(fontSize: 14, color: Colors.grey[700])),
+                          Text('ผู้ก่อตั้ง: ${statement.founder}', style: TextStyle(fontSize: 14, color: Colors.grey[700])),
+                          Text('สินทรัพย์: ${statement.asset.toInt()} ล้านบาท', style: TextStyle(fontSize: 14, color: Colors.grey[700])),
+                        ],
                       ),
-                      onPressed: () {
-                        provider.deleteTransaction(statement.keyID);
+                      leading: CircleAvatar(
+                        backgroundColor: const Color.fromARGB(255, 255, 73, 73),
+                        child: Text(
+                          statement.bankname[0].toUpperCase(),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      trailing: IconButton(
+                        icon: const Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                          size: 45,
+                        ),
+                        onPressed: () {
+                          provider.deleteTransaction(statement.keyID);
+                        },
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return EditScreen(statement: statement);
+                            },
+                          ),
+                        );
                       },
                     ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return EditScreen(statement: statement);
-                          },
-                        ),
-                      );
-                    },
                   ),
                 );
               },

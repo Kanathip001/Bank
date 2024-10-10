@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
+    return const DefaultTabController(
         length: 2,
         child: Scaffold(
           body: TabBarView(
@@ -60,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           bottomNavigationBar: TabBar(
             tabs: [
-              Tab(text: "รายการธุรกรรม", icon: Icon(Icons.list),),
+              Tab(text: "รายชื่อธนาคาร", icon: Icon(Icons.list),),
               Tab(text: "เพิ่มข้อมูล", icon: Icon(Icons.add),),
             ],
           ),

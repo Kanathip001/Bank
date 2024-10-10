@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 255, 74, 61),
         title: const Text(
-          "ShoCar",
+          "Bank",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 25,
@@ -37,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(70.0),
+          preferredSize: const Size.fromHeight(70.0),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Container(
@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 3,
                     blurRadius: 5,
-                    offset: Offset(0, 3), // changes position of shadow
+                    offset: const Offset(0, 3), // changes position of shadow
                   ),
                 ],
               ),
@@ -60,9 +60,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.grey[500],
                     fontWeight: FontWeight.bold,
                   ),
-                  prefixIcon: Icon(Icons.search, color: Colors.grey[700]),
+                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.all(15),
+                  contentPadding: const EdgeInsets.all(15),
                 ),
                 onChanged: (value) {
                   setState(() {
@@ -108,18 +108,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   background: Container(
                     alignment: Alignment.centerRight,
-                    padding: EdgeInsets.only(right: 20),
+                    padding: const EdgeInsets.only(right: 20),
                     color: Colors.red,
-                    child: Icon(Icons.delete, color: Colors.white),
+                    child: const Icon(Icons.delete, color: Colors.white),
                   ),
                   child: Card(
-                    elevation: 6,
+                    elevation: 4,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     child: ListTile(
-                      contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                       title: Text(
                         statement.bankname,
                         style: const TextStyle(
@@ -131,16 +131,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('ที่ตั้ง: ${statement.place}', style: TextStyle(fontSize: 14)),
-                          Text('ผู้ก่อตั้ง: ${statement.founder}', style: TextStyle(fontSize: 14)),
-                          Text('สินทรัพย์: ${statement.asset.toInt()} ล้านบาท', style: TextStyle(fontSize: 14)),
+                          Text('ที่ตั้ง: ${statement.place}', style: TextStyle(fontSize: 14, color: Colors.grey[700])),
+                          Text('ผู้ก่อตั้ง: ${statement.founder}', style: TextStyle(fontSize: 14, color: Colors.grey[700])),
+                          Text('สินทรัพย์: ${statement.asset.toInt()} ล้านบาท', style: TextStyle(fontSize: 14, color: Colors.grey[700])),
                         ],
                       ),
                       leading: CircleAvatar(
                         backgroundColor: const Color.fromARGB(255, 255, 73, 73),
                         child: Text(
                           statement.bankname[0].toUpperCase(),
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ),
                       onTap: () {

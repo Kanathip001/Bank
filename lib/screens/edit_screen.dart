@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 class EditScreen extends StatefulWidget {
   final Transactions statement;
 
-  EditScreen({super.key, required this.statement});
+  const EditScreen({super.key, required this.statement});
 
   @override
   State<EditScreen> createState() => _EditScreenState();
@@ -21,12 +21,16 @@ class _EditScreenState extends State<EditScreen> {
   final placeCtl = TextEditingController();
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     nameCtl.text = widget.statement.bankname;
     placeCtl.text = widget.statement.place;
     founderCtl.text = widget.statement.founder;
     assetCtl.text = widget.statement.asset.toString();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('แก้ไขข้อมูล'),
@@ -61,8 +65,14 @@ class _EditScreenState extends State<EditScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 255, 74, 61), // ปรับสีพื้นหลัง
                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30), // เพิ่มมุมมน
+                    ),
                   ),
-                  child: const Text('แก้ไขข้อมูล', style: TextStyle(fontSize: 18, color: Colors.white)), // ปรับสีข้อความ
+                  child: const Text(
+                    'แก้ไขข้อมูล',
+                    style: TextStyle(fontSize: 18, color: Colors.white), // ปรับสีข้อความ
+                  ),
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
                       var statement = Transactions(
@@ -78,7 +88,7 @@ class _EditScreenState extends State<EditScreen> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => MyHomePage(),
+                          builder: (context) => const MyHomePage(),
                         ),
                       );
                     }
@@ -92,14 +102,20 @@ class _EditScreenState extends State<EditScreen> {
     );
   }
 
-  Widget _buildTextField({required String label, required TextEditingController controller, TextInputType? keyboardType}) {
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+    TextInputType? keyboardType,
+  }) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: TextFormField(
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          border: OutlineInputBorder(),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15), // ทำให้ขอบมน
+          ),
           contentPadding: const EdgeInsets.all(10),
         ),
         controller: controller,
